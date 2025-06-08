@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load data
-file_path = "Cleaned_Selected_Variables.csv"  # Ganti path jika file berada di lokasi berbeda
+file_path = "Cleaned_Selected_Variables.csv"  # Ganti jika path berbeda
 df = pd.read_csv(file_path)
 
 # List of variables to visualize
@@ -13,18 +13,28 @@ columns = df.columns.tolist()
 for col in columns:
     plt.figure(figsize=(14, 10))
 
-    # Histogram
+    # Hitung statistik
+    mean = df[col].mean()
+    median = df[col].median()
+    mode = df[col].mode().iloc[0] if not df[col].mode().empty else None
+
+    # Histogram + garis mean, median, mode
     plt.subplot(2, 2, 1)
     plt.hist(df[col], bins=20, color='skyblue', edgecolor='black')
+    plt.axvline(mean, color='blue', linestyle='--', linewidth=2, label=f'Mean: {mean:.2f}')
+    plt.axvline(median, color='green', linestyle='--', linewidth=2, label=f'Median: {median:.2f}')
+    if mode is not None:
+        plt.axvline(mode, color='red', linestyle='--', linewidth=2, label=f'Mode: {mode:.2f}')
     plt.title(f'Histogram of {col}')
     plt.xlabel(col)
     plt.ylabel('Frequency')
+    plt.legend()
     plt.grid(True)
 
-    # Bar Chart (only if categorical or few unique values)
+    # Bar Chart (jika data kategorikal)
     plt.subplot(2, 2, 2)
     if df[col].nunique() < 10:
-        df[col].value_counts().plot(kind='bar', color='lightcoral', edgecolor='black')
+        df[col].value_counts().sort_index().plot(kind='bar', color='lightcoral', edgecolor='black')
         plt.title(f'Bar Chart of {col}')
         plt.xlabel(col)
         plt.ylabel('Count')
